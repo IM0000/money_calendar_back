@@ -11,7 +11,6 @@ import {
   HttpStatus,
   UseGuards,
   Req,
-  UnauthorizedException,
   Logger,
   Inject,
 } from '@nestjs/common';

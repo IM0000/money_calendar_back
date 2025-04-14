@@ -42,14 +42,17 @@ export class EmailService {
         <p>인증 코드의 유효 기간은 10분입니다.</p>
       `,
     };
-    this.logger.log('sendMemberJoinVerification end');
-    this.logger.log(mailOptions);
     return await this.transporter.sendMail(mailOptions);
   }
 
   async sendNotificationEmail(dto: SendNotificationEmailDto) {
-    // TODO: 실제 이메일 발송 로직 구현
-    // 현재는 로그만 출력
-    console.log('이메일 알림 발송:', dto);
+    const mailOptions: EmailOptions = {
+      to: dto.email,
+      subject: '머니캘린더 알림',
+      html: `
+        ${dto.content}
+      `,
+    };
+    return await this.transporter.sendMail(mailOptions);
   }
 }

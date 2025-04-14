@@ -1,5 +1,9 @@
 // /auth/auth.service.ts
-import { ForbiddenException, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Logger,
+} from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import { Injectable, Inject, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
@@ -47,7 +51,6 @@ export class AuthService {
    */
   async loginWithEmail(loginDto: LoginDto): Promise<any> {
     const user = await this.usersService.findUserByEmail(loginDto.email);
-    this.logger.log('loginWithEmail', user);
 
     if (!user) {
       throw new ForbiddenException({
@@ -120,11 +123,9 @@ export class AuthService {
    */
   async generateVerificationToken(email: string): Promise<string> {
     const token = uuidv4(); // 고유한 토큰 생성
-    this.logger.log(token);
 
     // 토큰을 데이터베이스에 저장 (예: Prisma 사용)
     await this.usersService.storeVerificationToken(token, email);
-    this.logger.log('generateVerificationToken', 'token', token);
     return token;
   }
 
@@ -142,7 +143,10 @@ export class AuthService {
       OAuthProviderEnum.Kakao.toString(),
     ];
     if (!validProviders.includes(provider)) {
-      throw new Error(`지원하지 않는 OAuth 제공자입니다: ${provider}`);
+      throw new BadRequestException({
+        errorCode: ErrorCodes.BAD_REQUEST_003,
+        errorMessage: '지원하지 않는 OAuth 제공자입니다.',
+      });
     }
 
     const statePayload = {

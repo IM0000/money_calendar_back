@@ -5,6 +5,7 @@ import {
   IsString,
   IsOptional,
   IsBoolean,
+  IsEmail,
 } from 'class-validator';
 
 export class CreateNotificationDto {
@@ -33,6 +34,9 @@ export class UpdateUserNotificationSettingsDto {
 }
 
 export class SendNotificationEmailDto {
+  @IsEmail()
+  email: string;
+
   @IsString()
   subject: string;
 

@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { NotificationService } from './notification.service';
 import { EmailService } from '../email/email.service';
-import { ContentType, NotificationMethod } from '@prisma/client';
+import { ContentType } from '@prisma/client';
 import { SendNotificationEmailDto } from './dto/notification.dto';
+import { UsersService } from '../users/users.service';
+import { ErrorCodes } from '../common/enums/error-codes.enum';
 
 @Injectable()
 export class NotificationListener {
@@ -41,7 +43,15 @@ export class NotificationListener {
         (userSettings.preferredMethod === 'EMAIL' ||
           userSettings.preferredMethod === 'BOTH')
       ) {
+        if (!notification.user) {
+          throw new NotFoundException({
+            errorCode: ErrorCodes.RESOURCE_001,
+            errorMessage: '유저 정보가 없습니다.',
+          });
+        }
+
         const emailDto: SendNotificationEmailDto = {
+          email: notification.user.email,
           subject: `${before.name} 지표 업데이트 알림`,
           content: `${before.name}의 실제값이 ${before.actual}에서 ${after.actual}로 변경되었습니다.`,
         };
@@ -79,7 +89,15 @@ export class NotificationListener {
         (userSettings.preferredMethod === 'EMAIL' ||
           userSettings.preferredMethod === 'BOTH')
       ) {
+        if (!notification.user) {
+          throw new NotFoundException({
+            errorCode: ErrorCodes.RESOURCE_001,
+            errorMessage: '유저 정보가 없습니다.',
+          });
+        }
+
         const emailDto: SendNotificationEmailDto = {
+          email: notification.user.email,
           subject: `${before.company.name} 실적 업데이트 알림`,
           content: `${before.company.name}의 실적이 업데이트되었습니다. 
           EPS : ${after.actualEPS}, 매출 : ${after.actualRevenue}`,

@@ -9,10 +9,7 @@ import {
   CreateNotificationDto,
   UpdateUserNotificationSettingsDto,
 } from './dto/notification.dto';
-import {
-  convertEarningsBigInt,
-  convertEconomicIndicatorBigInt,
-} from '../utils/convert-bigint';
+import { ErrorCodes } from '../common/enums/error-codes.enum';
 
 @Injectable()
 export class NotificationService {
@@ -66,11 +63,17 @@ export class NotificationService {
     });
 
     if (!notification) {
-      throw new NotFoundException('알림을 찾을 수 없습니다.');
+      throw new NotFoundException({
+        errorCode: ErrorCodes.RESOURCE_001,
+        errorMessage: '알림을 찾을 수 없습니다.',
+      });
     }
 
     if (notification.userId !== userId) {
-      throw new ForbiddenException('접근 권한이 없습니다.');
+      throw new ForbiddenException({
+        errorCode: ErrorCodes.AUTHZ_001,
+        errorMessage: '접근 권한이 없습니다.',
+      });
     }
 
     await this.prisma.notification.update({
@@ -104,7 +107,10 @@ export class NotificationService {
     });
 
     if (!notification) {
-      throw new NotFoundException('알림을 찾을 수 없습니다.');
+      throw new NotFoundException({
+        errorCode: ErrorCodes.RESOURCE_001,
+        errorMessage: '알림을 찾을 수 없습니다.',
+      });
     }
 
     return this.prisma.notification.delete({
@@ -118,11 +124,17 @@ export class NotificationService {
     });
 
     if (!notification) {
-      throw new NotFoundException('알림을 찾을 수 없습니다.');
+      throw new NotFoundException({
+        errorCode: ErrorCodes.RESOURCE_001,
+        errorMessage: '알림을 찾을 수 없습니다.',
+      });
     }
 
     if (notification.userId !== userId) {
-      throw new ForbiddenException('이 알림에 대한 접근 권한이 없습니다.');
+      throw new ForbiddenException({
+        errorCode: ErrorCodes.AUTHZ_001,
+        errorMessage: '알림에 대한 접근 권한이 없습니다.',
+      });
     }
 
     await this.prisma.notification.delete({
@@ -223,7 +235,10 @@ export class NotificationService {
       where: { id: indicatorId },
     });
     if (!indicator) {
-      throw new NotFoundException('해당 경제지표를 찾을 수 없습니다.');
+      throw new NotFoundException({
+        errorCode: ErrorCodes.RESOURCE_001,
+        errorMessage: '해당 경제지표를 찾을 수 없습니다.',
+      });
     }
 
     // 사용자와 경제지표의 복합 유니크 제약조건에 따라 알림 등록 (업서트)
@@ -255,7 +270,10 @@ export class NotificationService {
       where: { id: earningsId },
     });
     if (!earnings) {
-      throw new NotFoundException('해당 실적 정보를 찾을 수 없습니다.');
+      throw new NotFoundException({
+        errorCode: ErrorCodes.RESOURCE_001,
+        errorMessage: '해당 실적 정보를 찾을 수 없습니다.',
+      });
     }
 
     // 사용자와 실적의 복합 유니크 제약조건에 따라 알림 등록 (업서트)
@@ -292,9 +310,10 @@ export class NotificationService {
       },
     });
     if (!notification) {
-      throw new NotFoundException(
-        '해당 경제지표에 대한 알림 정보를 찾을 수 없습니다.',
-      );
+      throw new NotFoundException({
+        errorCode: ErrorCodes.RESOURCE_001,
+        errorMessage: '해당 경제지표에 대한 알림 정보를 찾을 수 없습니다.',
+      });
     }
 
     // 알림 삭제
@@ -326,9 +345,10 @@ export class NotificationService {
       },
     });
     if (!notification) {
-      throw new NotFoundException(
-        '해당 실적에 대한 알림 정보를 찾을 수 없습니다.',
-      );
+      throw new NotFoundException({
+        errorCode: ErrorCodes.RESOURCE_001,
+        errorMessage: '해당 실적에 대한 알림 정보를 찾을 수 없습니다.',
+      });
     }
 
     // 알림 삭제
@@ -375,7 +395,10 @@ export class NotificationService {
       where: { id: dividendId },
     });
     if (!dividend) {
-      throw new NotFoundException('해당 배당 정보를 찾을 수 없습니다.');
+      throw new NotFoundException({
+        errorCode: ErrorCodes.RESOURCE_001,
+        errorMessage: '해당 배당 정보를 찾을 수 없습니다.',
+      });
     }
 
     // 이미 알림이 있는지 확인
@@ -427,7 +450,10 @@ export class NotificationService {
 
     // 알림이 없는 경우
     if (!notification) {
-      throw new NotFoundException('해당 배당에 대한 알림 설정이 없습니다.');
+      throw new NotFoundException({
+        errorCode: ErrorCodes.RESOURCE_001,
+        errorMessage: '해당 배당에 대한 알림 설정이 없습니다.',
+      });
     }
 
     // 알림 제거

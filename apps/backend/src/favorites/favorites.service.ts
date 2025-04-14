@@ -9,6 +9,7 @@ import {
   convertEarningsBigInt,
   convertEconomicIndicatorBigInt,
 } from '../utils/convert-bigint';
+import { ErrorCodes } from '../common/enums/error-codes.enum';
 
 @Injectable()
 export class FavoritesService {
@@ -45,7 +46,10 @@ export class FavoritesService {
     });
 
     if (!user) {
-      throw new NotFoundException('사용자를 찾을 수 없습니다.');
+      throw new NotFoundException({
+        errorCode: ErrorCodes.RESOURCE_001,
+        errorMessage: '사용자를 찾을 수 없습니다.',
+      });
     }
 
     return {
@@ -170,140 +174,116 @@ export class FavoritesService {
   }
 
   async addFavoriteEarnings(userId: number, earningsId: number) {
-    try {
-      // 이미 존재하는지 확인
-      const existingFavorite = await this.prisma.favoriteEarnings.findUnique({
-        where: {
-          userId_earningsId: {
-            userId,
-            earningsId,
-          },
-        },
-      });
-
-      if (existingFavorite) {
-        return { message: '이미 즐겨찾기에 추가되어 있습니다.' };
-      }
-
-      await this.prisma.favoriteEarnings.create({
-        data: {
+    // 이미 존재하는지 확인
+    const existingFavorite = await this.prisma.favoriteEarnings.findUnique({
+      where: {
+        userId_earningsId: {
           userId,
           earningsId,
         },
-      });
+      },
+    });
 
-      return { message: '즐겨찾기에 성공적으로 추가되었습니다.' };
-    } catch (error) {
-      throw new BadRequestException('즐겨찾기 추가 중 오류가 발생했습니다.');
+    if (existingFavorite) {
+      return { message: '이미 즐겨찾기에 추가되어 있습니다.' };
     }
+
+    await this.prisma.favoriteEarnings.create({
+      data: {
+        userId,
+        earningsId,
+      },
+    });
+
+    return { message: '즐겨찾기에 성공적으로 추가되었습니다.' };
   }
 
   async removeFavoriteEarnings(userId: number, earningsId: number) {
-    try {
-      await this.prisma.favoriteEarnings.delete({
-        where: {
-          userId_earningsId: {
-            userId,
-            earningsId,
-          },
+    await this.prisma.favoriteEarnings.delete({
+      where: {
+        userId_earningsId: {
+          userId,
+          earningsId,
         },
-      });
+      },
+    });
 
-      return { message: '즐겨찾기에서 성공적으로 제거되었습니다.' };
-    } catch (error) {
-      throw new BadRequestException('즐겨찾기 제거 중 오류가 발생했습니다.');
-    }
+    return { message: '즐겨찾기에서 성공적으로 제거되었습니다.' };
   }
 
   async addFavoriteDividends(userId: number, dividendId: number) {
-    try {
-      // 이미 존재하는지 확인
-      const existingFavorite = await this.prisma.favoriteDividends.findUnique({
-        where: {
-          userId_dividendId: {
-            userId,
-            dividendId,
-          },
-        },
-      });
-
-      if (existingFavorite) {
-        return { message: '이미 즐겨찾기에 추가되어 있습니다.' };
-      }
-
-      await this.prisma.favoriteDividends.create({
-        data: {
+    // 이미 존재하는지 확인
+    const existingFavorite = await this.prisma.favoriteDividends.findUnique({
+      where: {
+        userId_dividendId: {
           userId,
           dividendId,
         },
-      });
+      },
+    });
 
-      return { message: '즐겨찾기에 성공적으로 추가되었습니다.' };
-    } catch (error) {
-      throw new BadRequestException('즐겨찾기 추가 중 오류가 발생했습니다.');
+    if (existingFavorite) {
+      return { message: '이미 즐겨찾기에 추가되어 있습니다.' };
     }
+
+    await this.prisma.favoriteDividends.create({
+      data: {
+        userId,
+        dividendId,
+      },
+    });
+
+    return { message: '즐겨찾기에 성공적으로 추가되었습니다.' };
   }
 
   async removeFavoriteDividends(userId: number, dividendId: number) {
-    try {
-      await this.prisma.favoriteDividends.delete({
-        where: {
-          userId_dividendId: {
-            userId,
-            dividendId,
-          },
+    await this.prisma.favoriteDividends.delete({
+      where: {
+        userId_dividendId: {
+          userId,
+          dividendId,
         },
-      });
+      },
+    });
 
-      return { message: '즐겨찾기에서 성공적으로 제거되었습니다.' };
-    } catch (error) {
-      throw new BadRequestException('즐겨찾기 제거 중 오류가 발생했습니다.');
-    }
+    return { message: '즐겨찾기에서 성공적으로 제거되었습니다.' };
   }
 
   async addFavoriteIndicator(userId: number, indicatorId: number) {
-    try {
-      // 이미 존재하는지 확인
-      const existingFavorite = await this.prisma.favoriteIndicator.findUnique({
-        where: {
-          userId_indicatorId: {
-            userId,
-            indicatorId,
-          },
-        },
-      });
-
-      if (existingFavorite) {
-        return { message: '이미 즐겨찾기에 추가되어 있습니다.' };
-      }
-
-      await this.prisma.favoriteIndicator.create({
-        data: {
+    // 이미 존재하는지 확인
+    const existingFavorite = await this.prisma.favoriteIndicator.findUnique({
+      where: {
+        userId_indicatorId: {
           userId,
           indicatorId,
         },
-      });
+      },
+    });
 
-      return { message: '즐겨찾기에 성공적으로 추가되었습니다.' };
-    } catch (error) {
-      throw new BadRequestException('즐겨찾기 추가 중 오류가 발생했습니다.');
+    if (existingFavorite) {
+      return { message: '이미 즐겨찾기에 추가되어 있습니다.' };
     }
+
+    await this.prisma.favoriteIndicator.create({
+      data: {
+        userId,
+        indicatorId,
+      },
+    });
+
+    return { message: '즐겨찾기에 성공적으로 추가되었습니다.' };
   }
 
   async removeFavoriteIndicator(userId: number, indicatorId: number) {
-    try {
-      await this.prisma.favoriteIndicator.delete({
-        where: {
-          userId_indicatorId: {
-            userId,
-            indicatorId,
-          },
+    await this.prisma.favoriteIndicator.delete({
+      where: {
+        userId_indicatorId: {
+          userId,
+          indicatorId,
         },
-      });
+      },
+    });
 
-      return { message: '즐겨찾기에서 성공적으로 제거되었습니다.' };
-    } catch (error) {
-      throw new BadRequestException('즐겨찾기 제거 중 오류가 발생했습니다.');
-    }
+    return { message: '즐겨찾기에서 성공적으로 제거되었습니다.' };
   }
 }
